@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <style>
+        /* Existing styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .navbar {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            text-align: right;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 10px;
+        }
+
+        .navbar a:hover {
+            background-color: #555;
+        }
+
+        .main-container {
+            display: flex;
+            flex: 1;
+        }
+
+        .sidebar {
+            width: 200px;
+            background-color: #f4f4f4;
+            padding: 20px;
+            border-right: 1px solid #ddd;
+            height: calc(100vh - 50px);
+            box-sizing: border-box;
+            position: fixed;
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 10px;
+            color: #333;
+            text-decoration: none;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+
+        .sidebar a:hover {
+            background-color: #ddd;
+        }
+
+        .content {
+            margin-left: 220px;
+            padding: 20px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        h1, h2 {
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+
+        .pagination {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .pagination a {
+            margin: 0 5px;
+            text-decoration: none;
+            color: #333;
+            border: 1px solid #ddd;
+            padding: 5px 10px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .pagination a.active {
+            background-color: #333;
+            color: white;
+            border: 1px solid #333;
+        }
+
+        .pagination a:hover {
+            background-color: #ddd;
+        }
+
+        .pagination a.disabled {
+            color: #999;
+            pointer-events: none;
+            cursor: default;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="{% url 'logout' %}">Logout</a>
+    </div>
+
+    <div class="main-container">
+        <div class="sidebar">
+            <a href="?section=veg">Veg</a>
+            <a href="?section=messages">Messages</a>
+            <a href="?section=users">Users</a>
+            <a href="?section=commandes">Commandes</a>
+        </div>
+
+        <div class="content">
+            {% block content %}
+            {% if section == 'veg' %}
+                <h2>Veg</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Price</th>
+                            <th>Exists</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for veg in vegs %}
+                        <tr>
+                            <td>{{ veg.name }}</td>
+                            <td>${{ veg.price }}</td>
+                            <td>{{ veg.existe }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                {% if paginator %}
+                    <div class="pagination">
+                        <a href="?section=veg&page=1" class="{% if not page_obj.has_previous %}disabled{% endif %}">First</a>
+                        <a href="?section=veg&page={{ page_obj.previous_page_number }}" class="{% if not page_obj.has_previous %}disabled{% endif %}">Previous</a>
+
+                        <span class="current">
+                            Page {{ page_obj.number }} of {{ paginator.num_pages }}.
+                        </span>
+
+                        <a href="?section=veg&page={{ page_obj.next_page_number }}" class="{% if not page_obj.has_next %}disabled{% endif %}">Next</a>
+                        <a href="?section=veg&page={{ paginator.num_pages }}" class="{% if not page_obj.has_next %}disabled{% endif %}">Last</a>
+                    </div>
+                {% endif %}
+
+            {% elif section == 'messages' %}
+                <h2>Messages</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                            <th>Message</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for message in messages %}
+                        <tr>
+                            <td>{{ message.name }}</td>
+                            <td>{{ message.phone }}</td>
+                            <td>{{ message.email }}</td>
+                            <td>{{ message.msg }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                {% if paginator %}
+                    <div class="pagination">
+                        <a href="?section=messages&page=1" class="{% if not page_obj.has_previous %}disabled{% endif %}">First</a>
+                        <a href="?section=messages&page={{ page_obj.previous_page_number }}" class="{% if not page_obj.has_previous %}disabled{% endif %}">Previous</a>
+
+                        <span class="current">
+                            Page {{ page_obj.number }} of {{ paginator.num_pages }}.
+                        </span>
+
+                        <a href="?section=messages&page={{ page_obj.next_page_number }}" class="{% if not page_obj.has_next %}disabled{% endif %}">Next</a>
+                        <a href="?section=messages&page={{ paginator.num_pages }}" class="{% if not page_obj.has_next %}disabled{% endif %}">Last</a>
+                    </div>
+                {% endif %}
+
+            {% elif section == 'users' %}
+                <h2>Users</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>User Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td>{{ user.username }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>{{ user.user_type }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                {% if paginator %}
+                    <div class="pagination">
+                        <a href="?section=users&page=1" class="{% if not page_obj.has_previous %}disabled{% endif %}">First</a>
+                        <a href="?section=users&page={{ page_obj.previous_page_number }}" class="{% if not page_obj.has_previous %}disabled{% endif %}">Previous</a>
+
+                        <span class="current">
+                            Page {{ page_obj.number }} of {{ paginator.num_pages }}.
+                        </span>
+
+                        <a href="?section=users&page={{ page_obj.next_page_number }}" class="{% if not page_obj.has_next %}{% endif %}">Next</a>
+                        <a href="?section=users&page={{ paginator.num_pages }}" class="{% if not page_obj.has_next %}disabled{% endif %}">Last</a>
+                    </div>
+                {% endif %}
+
+            {% elif section == 'commandes' %}
+                <h2>Commandes</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Client</th>
+                            <th>Total Price</th>
+                            <th>Created At</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for commande in commandes %}
+                        <tr>
+                            <td>{{ commande.client.username }}</td>
+                            <td>${{ commande.prix_total }}</td>
+                            <td>{{ commande.create_at }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                {% if paginator %}
+                    <div class="pagination">
+                        <a href="?section=commandes&page=1" class="{% if not page_obj.has_previous %}disabled{% endif %}">First</a>
+                        <a href="?section=commandes&page={{ page_obj.previous_page_number }}" class="{% if not page_obj.has_previous %}disabled{% endif %}">Previous</a>
+
+                        <span class="current">
+                            Page {{ page_obj.number }} of {{ paginator.num_pages }}.
+                        </span>
+
+                        <a href="?section=commandes&page={{ page_obj.next_page_number }}" class="{% if not page_obj.has_next %}disabled{% endif %}">Next</a>
+                        <a href="?section=commandes&page={{ paginator.num_pages }}" class="{% if not page_obj.has_next %}disabled{% endif %}">Last</a>
+                    </div>
+                {% endif %}
+
+            {% else %}
+                <h2>Welcome to the Dashboard</h2>
+            {% endif %}
+            {% endblock %}
+        </div>
+    </div>
+</body>
+</html>
