@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account</title>
+    {% load static %}
+    <style>
+        body {
+            align-items: center;
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+            height: 100vh;
+            background-image: url("{% static 'image/blog-bg.png' %}");
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+        
+        .form {
+            background-color: #15172b;
+            border-radius: 20px;
+            box-sizing: border-box;
+            height: 600px; /* Adjusted height */
+            padding: 20px;
+            width: 320px;
+        }
+        
+        .title {
+            color: #eee;
+            font-family: sans-serif;
+            font-size: 36px;
+            font-weight: 600;
+            margin-top: 30px;
+        }
+        
+        .subtitle {
+            color: #eee;
+            font-family: sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        
+        .input-container {
+            height: 50px;
+            position: relative;
+            width: 100%;
+        }
+        
+        .ic1 {
+            margin-top: 40px;
+        }
+        
+        .ic2 {
+            margin-top: 30px;
+        }
+        
+        .input {
+            background-color: #303245;
+            border-radius: 12px;
+            border: 0;
+            box-sizing: border-box;
+            color: #eee;
+            font-size: 18px;
+            height: 100%;
+            outline: 0;
+            padding: 4px 20px;
+            width: 100%;
+        }
+        
+        .cut {
+            background-color: #15172b;
+            border-radius: 10px;
+            height: 20px;
+            left: 20px;
+            position: absolute;
+            top: -20px;
+            transform: translateY(0);
+            transition: transform 200ms;
+            width: 76px;
+        }
+        
+        .cut-short {
+            width: 50px; /* Adjust as needed */
+        }
+        
+        .input:focus ~ .cut,
+        .input:not(:placeholder-shown) ~ .cut,
+        select:focus ~ .cut,
+        select:not(:placeholder-shown) ~ .cut {
+            transform: translateY(8px);
+        }
+        
+        .placeholder {
+            color: #65657b;
+            font-family: sans-serif;
+            left: 20px;
+            line-height: 14px;
+            pointer-events: none;
+            position: absolute;
+            transform-origin: 0 50%;
+            transition: transform 200ms, color 200ms;
+            top: 20px;
+        }
+        
+        .input:focus ~ .placeholder,
+        .input:not(:placeholder-shown) ~ .placeholder,
+        select:focus ~ .placeholder,
+        select:not(:placeholder-shown) ~ .placeholder {
+            transform: translateY(-30px) translateX(10px) scale(0.75);
+        }
+        
+        .input:not(:placeholder-shown) ~ .placeholder,
+        select:not(:placeholder-shown) ~ .placeholder {
+            color: #808097;
+        }
+        
+        .input:focus ~ .placeholder,
+        select:focus ~ .placeholder {
+            color: #dc2f55;
+        }
+        
+        .submit {
+            background-color: #08d;
+            border-radius: 12px;
+            border: 0;
+            box-sizing: border-box;
+            color: #eee;
+            cursor: pointer;
+            font-size: 18px;
+            height: 50px;
+            margin-top: 38px;
+            outline: 0;
+            text-align: center;
+            width: 100%;
+        }
+        
+        .submit:active {
+            background-color: #06b;
+        }
+        
+        .error {
+            color: #dc2f55;
+        }
+    </style>
+</head>
+<body>
+    <form method="POST" action={% url 'regapi'  %}>
+        {% csrf_token %}
+        <div class="form">
+            <div class="title">Welcome</div>
+            <div class="subtitle">Let's create your account!</div>
+
+            <div class="input-container ic1">
+                <input id="username" class="input" type="text" placeholder=" " name="username" />
+                <div class="cut"></div>
+                <label for="username" class="placeholder">Username</label>
+            </div>
+            
+            <div class="input-container ic2">
+                <input id="email" class="input" type="email" placeholder=" " name="email" />
+                <div class="cut"></div>
+                <label for="email" class="placeholder">Email</label>
+            </div>
+            
+            <div class="input-container ic2">
+                <input id="password1" class="input" type="password" placeholder=" " name="password1" />
+                <div class="cut"></div>
+                <label for="password1" class="placeholder">Password</label>
+            </div>
+            
+            <div class="input-container ic2">
+                <select id="typee" name="category" class="input" required>
+                    <option value="" disabled selected>Select a type</option>
+                    <option value="client">Client</option>
+                    <option value="vendeuse">Vendeuse</option>
+                </select>
+            </div>
+            
+                <div class="cut-short"></div>
+                <label for="category" class="placeholder">type</label>
+            </div>
+
+            <div class="input-container ic2">
+                <input id="password2" class="input" type="password" placeholder=" " name="password2" />
+                <div class="cut"></div>
+                <label for="password2" class="placeholder">Repeat Password</label>
+            </div>
+            
+            <div class="input-container ic2">
+                <div>Already have an account? <a href="{% url 'login_view' %}" style="color: #08d;">Login</a></div>
+            </div>
+            
+            <button type="submit" class="submit">Create Account</button>
+        </div>
+    </form>
+
+    <div>
+        {% if email_exists %}
+            <p class="error">User already exists. Please choose a different email.</p>
+        {% endif %}
+        {% if user_exists %}
+            <p class="error">User already exists. Please choose a different username.</p>
+        {% endif %}
+        {% if passwords_dont_match %}
+            <p class="error">Passwords do not match.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

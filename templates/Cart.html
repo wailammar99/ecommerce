@@ -1,0 +1,31 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Your Cart</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <h1>Your Cart</h1>
+    <table>
+        <tr>
+            <th>Vegetable</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Total</th>
+        </tr>
+        {% for item in cart_items %}
+        <tr>
+            <td>{{ item.vegetable.name }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>${{ item.vegetable.price }}</td>
+            <td>${{ item.total_price }}</td>
+        </tr>
+        {% endfor %}
+        <tr>
+            <td colspan="3">Total:</td>
+            <td>${{ total_price }}</td>
+        </tr>
+    </table>
+</body>
+</html>
