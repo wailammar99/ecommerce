@@ -142,7 +142,9 @@
         
         .error {
             color: #dc2f55;
+
         }
+       
     </style>
 </head>
 <body>
@@ -169,7 +171,11 @@
                 <div class="cut"></div>
                 <label for="password1" class="placeholder">Password</label>
             </div>
-            
+            <div class="input-container ic2">
+                <input id="password2" class="input" type="password" placeholder=" " name="password2" />
+                <div class="cut"></div>
+                <label for="password2" class="placeholder">Repeat Password</label>
+            </div>
             <div class="input-container ic2">
                 <select id="typee" name="category" class="input" required>
                     <option value="" disabled selected>Select a type</option>
@@ -182,19 +188,20 @@
                 <label for="category" class="placeholder">type</label>
             </div>
 
-            <div class="input-container ic2">
-                <input id="password2" class="input" type="password" placeholder=" " name="password2" />
-                <div class="cut"></div>
-                <label for="password2" class="placeholder">Repeat Password</label>
-            </div>
+           
             
             <div class="input-container ic2">
-                <div>Already have an account? <a href="{% url 'login_view' %}" style="color: #08d;">Login</a></div>
+                <div>Already have an account? <a   href="{% url 'login_view' %}" >Login</a></div>
+                <div class="cut-short"></div>
             </div>
+            <div><h1></h1></div>
             
             <button type="submit" class="submit">Create Account</button>
         </div>
+           
     </form>
+           
+
 
     <div>
         {% if email_exists %}

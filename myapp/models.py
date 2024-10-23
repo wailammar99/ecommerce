@@ -2,10 +2,18 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.utils.timezone import now
 
+
+
+
+class Cat(models.Model):
+    nom=models.CharField(max_length=200)
+    
 class Veg(models.Model):
+
+    
     name = models.CharField(max_length=200)
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    img = models.ImageField(upload_to="static/veg", null=True, blank=True)
+    img = models.ImageField(upload_to="veg", null=True, blank=True)
     existe = models.BooleanField(default=False)
 
     def __str__(self):

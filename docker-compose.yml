@@ -4,18 +4,13 @@ services:
   web:
     build: .
     ports:
-      - "8000:8000"
+      - "8000:8000"  # Map port 8000 on the host to port 8000 in the container
     volumes:
-      - ./mysite:/app   # Map the local mysite directory to /app in the container
-    depends_on:
-      - db
+      - .:/app  # Mount the current directory to /app in the container
+      - db_data:/app  # Mount the SQLite database file to persist data
     environment:
-      - DB_HOST=db
-      - DB_NAME=/db_data/db2.sqlite3  # Path to the SQLite3 database file inside the container
-      - DB_USER=
-      - DB_PASSWORD=
+      - DB_NAME=/app/db.sqlite3  # Path to the SQLite3 database file inside the container
 
-  db:
-    image: nouchka/sqlite:latest
-    volumes:
-      - ./mysite/   # Map the local directory containing the SQLite3 database file
+volumes:
+  db_data:
+    driver: local  # Use local driver for SQLite database persistence

@@ -1,14 +1,15 @@
 from django.shortcuts import render,redirect
+from .forms import VegForm
 from django.http import *
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login,logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.views.decorators.csrf import csrf_protect
 from  .models import *
 from rest_framework import status
 import json
 from django.views.decorators.csrf import csrf_exempt
-from django.core.paginator import Paginator
+from django.core.paginator import *
 from django.contrib.auth.models import User 
 from django.contrib import messages
 from django.db import models
@@ -48,8 +49,13 @@ def index(request):
     
     return render(request, 'index.html', {'vegs': vegs})
 
-def home (request):
-    return render(request,'index.html')
+def home(request):
+    role = None  # Default value for unauthenticated users
+    if request.user.is_authenticated:
+        role = request.user.user_type 
+        print(f"role is {role }")
+    
+    return render(request, 'index.html', {"role": role})
 def shop (request):
     vegs=Veg.objects.all()
     return render(request,"shop.html",{"vegs":vegs})
@@ -108,7 +114,7 @@ def reg(request):
             return redirect('register')
 
         # Create new user instance
-        new_user = User(username=username, email=email, user_type=user_type)
+        new_user = User(username=username, email=email, user_type=user_type,is_staff=False)
         new_user.set_password(password1)
         new_user.save()
 
@@ -140,26 +146,24 @@ def login_view(request):
     if request.method == 'POST':
         username = request.POST.get("username")
         password = request.POST.get("password")
-
-        # Try to authenticate with your custom user model
+        
         user = authenticate(request, username=username, password=password)
-
         
         if user is not None:
             login(request, user)
-            if user.user_type=="client" :
-
-             return redirect("dashbord")
-            else :
+            # Redirect based on user_type
+            if user.user_type == "client":
+                return redirect("dashbord")
+            elif user.user_type == "vendeuse":
                 return redirect("dashven")
-              # Respond with "+" on successful login
+            elif user.user_type == "admin":
+                return redirect("/admin/")
         else:
-            return redirect("login_view")  # Respond with "-" on failed login
+            # Add an error message when authentication fails
+            messages.error(request, "Invalid username or password. Please try again.")
+            return redirect('login_view')
     
     return render(request, 'conx.html')
-
-
-
 
 
 def veg_details(request, veg_id):
@@ -179,18 +183,24 @@ def veg_details(request, veg_id):
 
 def commande_view(request):
     if request.method == "POST":
+        if not request.user.is_authenticated:
+            print("User is not authenticated")
+            return redirect("login")
+        
+        # Load data from the request body
         data = json.loads(request.body)
-        user = User.objects.get(id=data['user_id'])  # Adjust as necessary
-
-        print(f"user {user}")#+
-
+        
+        # Get the user by ID
+        user = User.objects.get(id=data['user_id'])
+        print(f"user {user}")
+        
         prix_total = 0
 
-        # First, create and save the Commande object
+        # Create and save the Commande object
         commande = Commande.objects.create(client=user)
         print(f"commande {commande.id}")
 
-        # Then, add vegetables to the commande and calculate the total price
+        # Add vegetables to the commande and calculate total price
         for veg_id in data['vegs']:
             veg_instance = Veg.objects.get(id=veg_id)
             prix_total += veg_instance.price
@@ -208,53 +218,98 @@ def commande_view(request):
     
     return JsonResponse({'error': 'Method not allowed'}, status=405)
         
-        
-       
-     
-@login_required
+def commande_detail(request, commande_id):
+    if request.method == "GET":
+        try:
+            commande_cible = Commande.objects.get(id=commande_id)
+            serializer = CommandeSerializer(commande_cible)  # Removed many=True
+            return JsonResponse(serializer.data, status=200)
+        except Commande.DoesNotExist:
+            return JsonResponse({"error": "La commande est introuvable"}, status=404)
+          
 @login_required
 def dashboardven(request):
-    section = request.GET.get('section', 'welcome')
-    page_number = request.GET.get('page', 1)  # Get the page number from the request
+    section = request.GET.get('section', 'veg')  # Default to 'veg' if no section is specified
+    vegs, messages, users, commandes = [], [], [], []
+    form = None  # Initialize form as None to avoid UnboundLocalError
 
-    context = {'section': section}
+    # Pagination setup
+    veg_page_number = request.GET.get('page', 1)
+    messages_page_number = request.GET.get('page', 1)
+    users_page_number = request.GET.get('page', 1)
+    commandes_page_number = request.GET.get('page', 1)
 
     if section == 'veg':
-        veg_list = Veg.objects.all()
-        paginator = Paginator(veg_list, 3)  # Show 10 veg per page
-        page_obj = paginator.get_page(page_number)
-        context['vegs'] = page_obj
-        context['paginator'] = paginator
+        if request.method == 'POST':
+            form = VegForm(request.POST, request.FILES)
+            if form.is_valid():
+                form.save()
+                return redirect('dashboardven')  # Redirect to avoid re-submitting the form on refresh
+        else:
+            form = VegForm()
+        vegs = Veg.objects.all()
+        veg_paginator = Paginator(vegs, 5)  # Show 10 vegs per page
+        vegs = veg_paginator.get_page(veg_page_number)
 
     elif section == 'messages':
-        message_list = Message.objects.all()
-        paginator = Paginator(message_list, 10)  # Show 10 messages per page
-        page_obj = paginator.get_page(page_number)
-        context['messages'] = page_obj
-        context['paginator'] = paginator
+        messages = Message.objects.all()
+        messages_paginator = Paginator(messages, 10)  # Show 10 messages per page
+        messages = messages_paginator.get_page(messages_page_number)
 
     elif section == 'users':
-        user_list = User.objects.all()
-        paginator = Paginator(user_list, 3)  # Show 10 users per page
-        page_obj = paginator.get_page(page_number)
-        context['users'] = page_obj
-        context['paginator'] = paginator
+        users = User.objects.all()
+        users_paginator = Paginator(users, 5)  # Show 10 users per page
+        users = users_paginator.get_page(users_page_number)
 
     elif section == 'commandes':
-        commandes_list = Commande.objects.all()
-        paginator = Paginator(commandes_list, 10)  # Show 10 commandes per page
-        page_obj = paginator.get_page(page_number)
-        context['commandes'] = page_obj
-        context['paginator'] = paginator
+        commandes = Commande.objects.all()
+        commandes_paginator = Paginator(commandes, 10)  # Show 10 commandes per page
+        commandes = commandes_paginator.get_page(commandes_page_number)
 
+    context = {
+    'section': section,
+    'vegs': vegs,
+    'messages': messages,
+    'users': users,
+    'commandes': commandes,
+    'veg_paginator': veg_paginator if section == 'veg' else None,
+    'messages_paginator': messages_paginator if section == 'messages' else None,
+    'users_paginator': users_paginator if section == 'users' else None,
+    'commandes_paginator': commandes_paginator if section == 'commandes' else None,
+    'form': form,
+}
     return render(request, 'dashbordven.html', context)
-def logout(request):
+
+@csrf_exempt
+def logout_view(request):
     logout(request)
-    return redirect("index")
+    print("Logout successful")
+    return redirect("login_view")
 
+#crud veg 
+@login_required 
+def delete_veg(request,id_veg):
+    if request.method=="DELETE" :
+        try :
+            veg=Veg.objects.get(id=id_veg)
+            veg.delete()
+            return JsonResponse({"message":"the prodcest has benn delete "},status=200)
+        except Veg.DoesNotExist :
+            return JsonResponse({"message":"the prodcest not fund  "},status=404)
+    else :
+        return JsonResponse({"eroor":"methode not allow "},status=405)
+@login_required
+def create_veg_view(request):
+    if request.method == 'POST':
+        form = VegForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('success_url')  # Replace with your success URL
+    else:
+        form = VegForm()
 
-        
-      
+    return render(request, 'create_veg.html', {'form': form})
+
           
         
           
@@ -265,4 +320,3 @@ def logout(request):
      
      
    
-

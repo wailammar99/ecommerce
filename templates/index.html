@@ -30,6 +30,17 @@
       <link rel="stylesheet" href="{% static 'css/jquery.mCustomScrollbar.min.css' %}">
       <!-- Tweaks for older IEs-->
       <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
+      <style>
+         .nav-item.dropdown:hover .dropdown-menu {
+            display: block;
+            margin-top: 0; /* Adjust if needed */
+        }
+        
+        /* Prevent link from toggling when hovered */
+        .nav-item.dropdown .dropdown-toggle::after {
+            display: none;
+        }
+      </style>
    </head>
    <body>
       
@@ -53,20 +64,36 @@
                         <a class="nav-link" href="about">About</a>
                      </li>
                      <li class="nav-item">
-                        <a class="nav-link" href="vagetables">Vagetables</a>
+                        <a class="nav-link" href="vagetables">products</a>
                      </li>
                      <li class="nav-item">
                         <a class="nav-link" href="blog">Blog</a>
                      </li>
-                     <li class="nav-item">
-                        <a class="nav-link" href="contact">Contact Us</a>
-                     </li>   <li class="nav-item">
+                     <li class="nav-item dropdown">
                         {% if user.is_authenticated %}
-                        <a class="nav-link" href="register">logout </a>
-                        {%else %}
-                        <a class="nav-link" href="register">inscirpion  </a>
-                        {%endif%}
-                     </li>
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                {{ user.username }}
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" >Profile</a></li> <!-- Add profile link URL here -->
+                                <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                                {% if role == "vendeuse" %}
+                                <li><a class="dropdown-item" href="{% url 'dashven' %}">dashbord</a></li>
+                            {% else %}
+                                <li><a class="dropdown-item" href="{% url 'dashbord' %}">dashbord</a></li>
+                            {% endif %}
+                            </ul>
+                        {% else %}
+                            <a class="nav-link dropdown-toggle" href="#" id="guestDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Guest
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="guestDropdown">
+                                <li><a class="dropdown-item" href="{% url 'register' %}">Inscription</a></li>
+                                <li><a class="dropdown-item" href="{% url 'login_view' %}">Login</a></li>
+                            </ul>
+                        {% endif %}
+                    </li>
+                    
                      
                   </ul>
                   <form class="form-inline my-2 my-lg-0">
@@ -178,7 +205,7 @@
    <div class="container">
        <div class="row">
            <div class="col-sm-12">
-               <h1 class="vagetables_taital">Our Vagetables</h1>
+               <h1 class="vagetables_taital">Our product</h1>
                <p class="vagetables_text">Passages of Lorem Ipsum available, but the majority have suffered alteration </p>
            </div>
        </div>

@@ -29,9 +29,7 @@
       <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
       <style>
          .cart-icon {
-            position: fixed;
-            top: 10px;
-            right: 10px;
+            
             cursor: pointer;
          }
 
@@ -63,6 +61,113 @@
          .hidden {
             display: none;
          }
+         .cart {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            padding: 20px;
+          }
+          
+          .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+          }
+          
+          .cart-title {
+            font-size: 1.5rem;
+            margin: 0;
+          }
+          
+          .noOfItems {
+            font-size: 0.875rem;
+            color: #555;
+          }
+          
+          .close-cart {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+          }
+          
+          .cart-items {
+            flex-grow: 1;
+            overflow-y: auto;
+            margin-top: 20px;
+            padding-bottom: 20px;
+          }
+          
+          .cart-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+            margin-top: auto;
+          }
+          
+          .total {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+          }
+          
+          /* Commande Form Styling */
+          .commande-form {
+            margin-top: 20px;
+            border-top: 1px solid #ddd;
+            padding-top: 20px;
+          }
+          
+          .commande-form h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+          }
+          
+          #commandeForm {
+            display: flex;
+            flex-direction: column;
+          }
+          
+          #createCommandeForm input[type="hidden"] {
+            display: none;
+          }
+          
+          .create-commande-btn {
+            background-color: #28a745;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            width: 100%;
+          }
+          
+          .create-commande-btn:hover {
+            background-color: #218838;
+          }
+          
+          .response-message {
+            margin-top: 15px;
+            color: #28a745;
+            font-size: 0.9rem;
+            text-align: center;
+          }
+          
+          .response-message.error {
+            color: #dc3545;
+          }
+          
+          /* Responsive improvements */
+          @media (max-width: 768px) {
+            .cart-popup {
+              width: 100%;
+            }
+          }
+
       </style>
    </head>
    <body>
@@ -85,7 +190,7 @@
                         <a class="nav-link" href="about.html">About</a>
                      </li>
                      <li class="nav-item">
-                        <a class="nav-link" href="vagetables.html">Vegetables</a>
+                        <a class="nav-link" href="vagetables.html">products</a>
                      </li>
                      <li class="nav-item">
                         <a class="nav-link" href="blog.html">Blog</a>
@@ -93,40 +198,48 @@
                      <li class="nav-item">
                         <a class="nav-link" href="contact.html">Contact Us</a>
                      </li>
+                     <li class="nav-item">
+                       
+                     </li>
+                     <a class="nav-link" >
                      <div class="cart-icon" onclick="toggleCart()">
-                        Cart <span id="cart-count" class="badge">0</span>
+                        Carte <span id="cart-count" class="badge">0</span>
                      </div>
+                   
+                     </a>
+                     
                      <div id="cart-popup" class="cart-popup hidden">
-                        <div class="cart">
-                           <div class="cart-header">
-                              <h3>CART</h3>
-                              <p class="noOfItems">0 items</p>
-                              <button onclick="toggleCart()" class="close-cart">X</button>
-                           </div>
-                           <!-- Cart Items -->
-                           <div class="cart-items"></div>
-                           <!-- Cart Footer -->
-                           <div class="cart-footer cart-header">
-                              <h4>Total</h4>
-                              <p class="total">$0</p>
-                           </div>
-                           <!-- Commande Form -->
-                           <div class="commande-form">
-                              <h3>Create Commande</h3>
-                              <form id="commandeForm" method="POST" onsubmit="createCommande(event)">
-                                 {% csrf_token %}
-                                 <input type="hidden" id="user_id" name="user_id" value="{{ user.id }}">
-                                 <button type="submit">Create Commande</button>
-                              </form>
-                              <div id="responseMessage"></div>
-                           </div>
-                        </div>
-                     </div>
-                  </ul>
-                  <form class="form-inline my-2 my-lg-0">
-                     <div class="search_icon"><i class="fa fa-search" aria-hidden="true"></i></div>
-                  </form>
-               </div>
+    <div class="cart">
+        <!-- Cart Header -->
+        <div class="cart-header">
+            <h3 class="cart-title">Shopping Cart</h3>
+            <p class="noOfItems">0 items</p>
+            <button onclick="toggleCart()" class="close-cart" aria-label="Close Cart">X</button>
+        </div>
+        
+        <!-- Cart Items -->
+        <div class="cart-items">
+            <!-- Cart items will be dynamically rendered here -->
+        </div>
+        
+        <!-- Cart Footer -->
+        <div class="cart-footer">
+            <h4>Total:</h4>
+            <p class="total">$0</p>
+        </div>
+        
+        <!-- Commande Form -->
+        <div class="commande-form">
+            
+            <form id="commandeForm" method="POST" onsubmit="createCommande(event)">
+                {% csrf_token %}
+                <input type="hidden" id="user_id" name="user_id" value="{{ user.id }}">
+                <button type="submit" class="btn create-commande-btn">Create Commande</button>
+            </form>
+            <div id="responseMessage" class="response-message"></div>
+        </div>
+    </div>
+</div>
             </nav>
          </div>
       </div>
@@ -139,7 +252,7 @@
                <div class="container">
                   <div class="row">
                      <div class="col-sm-12">
-                        <h1 class="vagetables_taital">Our Vegetables</h1>
+                        <h1 class="vagetables_taital">Our Products</h1>
                         <p class="vagetables_text">Passages of Lorem Ipsum available, but the majority have suffered alteration.</p>
                      </div>
                   </div>
@@ -148,7 +261,7 @@
                         {% for v in vegs %}
                         <div class="col-md-4">
                            <div class="hover01 column">
-                              <img src="{% static v.img %}" alt="{{ v.name }}">
+                              <img src="{% static  v.img %}" alt="{{ v.name }}">
                            </div>
                            <h3 class="harshal_text">{{ v.name }}</h3>
                            <h3 class="rate_text">${{ v.price }}</h3>
@@ -301,37 +414,49 @@
          });
 
          function createCommande(event) {
-             event.preventDefault();
-
-             // Assuming the API expects an array of IDs
-             const vegIds = cart.map(item => item.id);
-
-             const data = {
-                 user_id: document.getElementById("user_id").value,
-                 vegs: vegIds
-             };
-
-             fetch("{% url 'create_commande' %}", {
-                 method: "POST",
-                 headers: {
-                     "Content-Type": "application/json",
-                     "X-CSRFToken": "{{ csrf_token }}"
-                 },
-                 body: JSON.stringify(data)
-             })
-             .then(response => response.json())
-             .then(result => {
-                 const responseMessage = document.getElementById("responseMessage");
-                 if (result.success) {
-                  alert("Commande created successfully!");
-                  cart.length = 0; // Clear the cart
-                  updateCartUI(); // Update the UI
-                 } else {
-                     alter( "Error creating Commande.");
-                 }
-             })
-             .catch(error => alter("Error:", error));
-         }
+            event.preventDefault();
+            console.log("start of fuction ")
+            // Assuming the API expects an array of IDs
+            const vegIds = cart.map(item => item.id);
+        
+            const data = {
+                user_id: document.getElementById("user_id").value,
+                vegs: vegIds
+            };
+        
+            fetch("{% url 'create_commande' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                // Capture the status code here
+                const statusCode = response.status;
+                console.log(statusCode)
+                return response.json().then(result => ({
+                    statusCode: statusCode,
+                    body: result
+                }));
+            })
+            .then(result => {
+                const responseMessage = document.getElementById("responseMessage");
+                if (result.statusCode === 201) {
+                    alert("Commande created successfully!");
+                    cart.length = 0; // Clear the cart
+                    updateCartUI(); // Update the UI
+                } else if (result.statusCode === 302) {
+                    alert("You need authentication.");
+                } else {
+                    console.log("Unexpected status code:", result.statusCode);
+                }
+            })
+            console.log("resposne status ",response.status)
+            .catch(error => alert("Error:", error));
+        }
+        
       </script>
    </body>
 </html>

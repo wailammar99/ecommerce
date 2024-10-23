@@ -1,0 +1,13 @@
+[commande ]
+ 1.do eroors message 
+ 2.do carte for all pages and store the data in local store 
+ 3.manage season 
+
+create a new module [catalogue ]
+fix attribute for retsurant produis 
+fix the auth systmee and manage sesion when he commande a prodacte 
+do page for vendeure et page pour client (profil ,suivre la commande )
+commande do attribute for etat (nouveux ,livre , en cour )
+client do adreese et num telephone 
+
+

@@ -24,3 +24,4 @@ class CustomUserAdmin(admin.ModelAdmin):
 class CommandeAdmin( admin.ModelAdmin ) :
     list_display=('id',"prix_total")
 
+admin.site.register(Cat)
