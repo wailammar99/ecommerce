@@ -234,21 +234,27 @@ def dashboardven(request):
     form = None  # Initialize form as None to avoid UnboundLocalError
 
     # Pagination setup
-    veg_page_number = request.GET.get('page', 1)
-    messages_page_number = request.GET.get('page', 1)
-    users_page_number = request.GET.get('page', 1)
-    commandes_page_number = request.GET.get('page', 1)
+    veg_page_number = request.GET.get('veg_page', 1)  # Changed to 'veg_page' for clarity
+    messages_page_number = request.GET.get('messages_page', 1)
+    users_page_number = request.GET.get('users_page', 1)
+    commandes_page_number = request.GET.get('commandes_page', 1)
+    action = request.GET.get('action', None)
+
+    # Initialize paginator variables
+    veg_paginator, messages_paginator, users_paginator, commandes_paginator = None, None, None, None
 
     if section == 'veg':
-        if request.method == 'POST':
-            form = VegForm(request.POST, request.FILES)
-            if form.is_valid():
-                form.save()
-                return redirect('dashboardven')  # Redirect to avoid re-submitting the form on refresh
-        else:
-            form = VegForm()
+        if action == 'create':  # Handle "create" action for vegetables
+            if request.method == 'POST':
+                form = VegForm(request.POST, request.FILES)
+                if form.is_valid():
+                    form.save()
+                    return redirect('dashboardven')  # Redirect to avoid re-submission
+            else:
+                form = VegForm()  # Initialize form for GET request
+
         vegs = Veg.objects.all()
-        veg_paginator = Paginator(vegs, 5)  # Show 10 vegs per page
+        veg_paginator = Paginator(vegs, 4)  # Show 5 vegs per page
         vegs = veg_paginator.get_page(veg_page_number)
 
     elif section == 'messages':
@@ -258,7 +264,7 @@ def dashboardven(request):
 
     elif section == 'users':
         users = User.objects.all()
-        users_paginator = Paginator(users, 5)  # Show 10 users per page
+        users_paginator = Paginator(users, 5)  # Show 5 users per page
         users = users_paginator.get_page(users_page_number)
 
     elif section == 'commandes':
@@ -267,17 +273,17 @@ def dashboardven(request):
         commandes = commandes_paginator.get_page(commandes_page_number)
 
     context = {
-    'section': section,
-    'vegs': vegs,
-    'messages': messages,
-    'users': users,
-    'commandes': commandes,
-    'veg_paginator': veg_paginator if section == 'veg' else None,
-    'messages_paginator': messages_paginator if section == 'messages' else None,
-    'users_paginator': users_paginator if section == 'users' else None,
-    'commandes_paginator': commandes_paginator if section == 'commandes' else None,
-    'form': form,
-}
+        'section': section,
+        'vegs': vegs,
+        'messages': messages,
+        'users': users,
+        'commandes': commandes,
+        'veg_paginator': veg_paginator,
+        'messages_paginator': messages_paginator if section == 'messages' else None,
+        'users_paginator': users_paginator if section == 'users' else None,
+        'commandes_paginator': commandes_paginator if section == 'commandes' else None,
+        'form': form,
+    }
     return render(request, 'dashbordven.html', context)
 
 @csrf_exempt
@@ -309,8 +315,15 @@ def create_veg_view(request):
         form = VegForm()
 
     return render(request, 'create_veg.html', {'form': form})
-
-          
+def create_vegetable(request):
+    if request.method == 'POST':
+        form = VegForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('dashven')
+    else:
+        form = VegForm()
+    return render(request, 'create_veg.html', {'form': form})
         
           
 

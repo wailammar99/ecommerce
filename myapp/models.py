@@ -4,13 +4,19 @@ from django.utils.timezone import now
 
 
 
-
-class Cat(models.Model):
-    nom=models.CharField(max_length=200)
+class Catlogue(models.Model):
+    nom=models.CharField( max_length=50)
+    def __str__(self) :
+        return f"{self.nom}"
     
+
+#+
+class Catlogue(models.Model):#+
+    nom=models.CharField( max_length=50)#+
 class Veg(models.Model):
-
-    
+#-
+    catalogue=models.ForeignKey(Catlogue,on_delete=models.CASCADE,null=True,blank=True)#-
+   
     name = models.CharField(max_length=200)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     img = models.ImageField(upload_to="veg", null=True, blank=True)
@@ -18,6 +24,7 @@ class Veg(models.Model):
 
     def __str__(self):
         return self.name
+
 
 class Message(models.Model):
     name = models.CharField(max_length=30)
@@ -44,3 +51,10 @@ class Commande(models.Model):
     vegs = models.ManyToManyField(Veg, related_name="commandes")
     prix_total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     create_at = models.DateTimeField(auto_now_add=True)
+    Etat_choice = (
+        ('annule', 'Annule'),
+        ('En cour ', 'en cour '),
+        ('livre', 'livre'),
+        ('Nouveux', 'nouveux')
+    )
+    etat = models.CharField(max_length=10, choices=Etat_choice,default="nouveux")

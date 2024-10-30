@@ -30,4 +30,6 @@ urlpatterns = [
     path("commande/id/<int:commande_id>/", views.commande_detail, name="commande_detail"),
     path("vendeuse/dashbord/", views.dashboardven, name="dashven"),
     path('admin/', admin.site.urls),
+    path('vegetables/create/', views.create_vegetable, name='create_vegetable'),
+    path('vegetables/id/<int:id_veg>/', views.delete_veg, name='delete_veg'),
 ]

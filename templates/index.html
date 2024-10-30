@@ -77,7 +77,8 @@
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <li><a class="dropdown-item" >Profile</a></li> <!-- Add profile link URL here -->
                                 <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
-                                {% if role == "vendeuse" %}
+                                {% if user.role == "Vendeuse" %}
+                                <script>console.log("role :",role) ; </script>
                                 <li><a class="dropdown-item" href="{% url 'dashven' %}">dashbord</a></li>
                             {% else %}
                                 <li><a class="dropdown-item" href="{% url 'dashbord' %}">dashbord</a></li>

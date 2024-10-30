@@ -1,5 +1,63 @@
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Submit</button>
-</form>
+{% extends 'base.html' %}
+
+{% block title %}Create New Vegetable{% endblock %}
+
+{% block content %}
+    <style>
+        /* Container styling */
+        .form-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Heading styling */
+        .form-container h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        /* Form styling */
+        .form-container form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Input field styling */
+        .form-container form .form-control {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ced4da;
+        }
+
+        /* Submit button styling */
+        .form-container button[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        /* Submit button hover effect */
+        .form-container button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+    </style>
+
+    <div class="form-container">
+        <h2>Create New Vegetable</h2>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+{% endblock %}

@@ -261,7 +261,7 @@
                         {% for v in vegs %}
                         <div class="col-md-4">
                            <div class="hover01 column">
-                              <img src="{% static  v.img %}" alt="{{ v.name }}">
+                              <img src="{{ veg.img.url }}" alt="{{ v.name }}">
                            </div>
                            <h3 class="harshal_text">{{ v.name }}</h3>
                            <h3 class="rate_text">${{ v.price }}</h3>
